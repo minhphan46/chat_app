@@ -1,5 +1,6 @@
 import 'package:chat_app/screens/auth_screen.dart';
 import 'package:chat_app/screens/chat_screen.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 
@@ -20,13 +21,12 @@ class MyApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       theme: ThemeData.from(
         colorScheme: ColorScheme.fromSwatch().copyWith(
+          background: Colors.white,
           secondary: Colors.deepPurple,
           primary: Colors.pink,
         ),
       ).copyWith(
         primaryColor: Colors.pink,
-        accentColor: Colors.deepPurple,
-        accentColorBrightness: Brightness.dark,
         textButtonTheme: TextButtonThemeData(
           style: TextButton.styleFrom(
             foregroundColor: Colors.pink,
@@ -41,29 +41,18 @@ class MyApp extends StatelessWidget {
           ),
         ),
         outlinedButtonTheme: OutlinedButtonThemeData(
-          style: OutlinedButton.styleFrom(
-            primary: Colors.pink,
-            backgroundColor: Colors.pink,
-          ),
+          style: OutlinedButton.styleFrom(),
         ),
       ),
-      /* ThemeData(
-        primarySwatch: Colors.blue,
-        primaryColor: Colors.pink,
-        //scaffoldBackgroundColor: Colors.pink,
-        /* colorScheme: ColorScheme.fromSwatch(
-          accentColor: Colors.deepPurple,
-        ), */
-        elevatedButtonTheme: ElevatedButtonThemeData(
-          style: ,
-          buttonColor: Colors.pink,
-          textTheme: ButtonTextTheme.primary,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(20),
-          ),
-        ),
-      ), */
-      home: const AuthScreen(),
+      home: StreamBuilder(
+        stream: FirebaseAuth.instance.authStateChanges(),
+        builder: (context, snapshot) {
+          if (snapshot.hasData) {
+            return ChatScreen();
+          }
+          return AuthScreen();
+        },
+      ),
     );
   }
 }

@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 
 class AuthForm extends StatefulWidget {
   Function submitAuthForm;
-  AuthForm(this.submitAuthForm);
+  bool isLoading;
+  AuthForm(this.submitAuthForm, this.isLoading);
 
   @override
   State<AuthForm> createState() => _AuthFormState();
@@ -21,10 +22,11 @@ class _AuthFormState extends State<AuthForm> {
     if (isValid) {
       _formKey.currentState!.save();
       widget.submitAuthForm(
-        _userEmail,
-        _userPassword,
-        _userName,
+        _userEmail.trim(),
+        _userPassword.trim(),
+        _userName.trim(),
         _isLogin,
+        context,
       );
     }
   }
@@ -42,6 +44,15 @@ class _AuthFormState extends State<AuthForm> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
+                  CircleAvatar(
+                    radius: 40,
+                    backgroundColor: Theme.of(context).colorScheme.primary,
+                  ),
+                  TextButton.icon(
+                    onPressed: () {},
+                    icon: Icon(Icons.image),
+                    label: Text("Add Image"),
+                  ),
                   TextFormField(
                     key: ValueKey('email'),
                     validator: (value) {
@@ -85,22 +96,27 @@ class _AuthFormState extends State<AuthForm> {
                     decoration: const InputDecoration(labelText: 'Password'),
                     obscureText: true,
                   ),
-                  ElevatedButton(
-                    onPressed: _trySubmit,
-                    child: Text(_isLogin ? 'Login' : 'Signup'),
-                  ),
-                  TextButton(
-                    onPressed: () {
-                      setState(() {
-                        _isLogin = !_isLogin;
-                      });
-                    },
-                    child: Text(
-                      _isLogin
-                          ? "Create new account"
-                          : "I already have a account",
-                    ),
-                  )
+                  widget.isLoading
+                      ? const Center(
+                          child: CircularProgressIndicator(),
+                        )
+                      : ElevatedButton(
+                          onPressed: _trySubmit,
+                          child: Text(_isLogin ? 'Login' : 'Signup'),
+                        ),
+                  if (!widget.isLoading)
+                    TextButton(
+                      onPressed: () {
+                        setState(() {
+                          _isLogin = !_isLogin;
+                        });
+                      },
+                      child: Text(
+                        _isLogin
+                            ? "Create new account"
+                            : "I already have a account",
+                      ),
+                    )
                 ],
               ),
             ),
