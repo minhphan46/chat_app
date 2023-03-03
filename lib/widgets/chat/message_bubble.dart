@@ -8,14 +8,29 @@ class MessageBubble extends StatelessWidget {
   final bool isMe;
   final Key? key;
   final String username;
+  final String ureImage;
 
-  MessageBubble(this.message, this.username, this.isMe, {this.key});
+  MessageBubble(this.message, this.username, this.ureImage, this.isMe,
+      {this.key});
 
   @override
   Widget build(BuildContext context) {
+    Widget avatar = Padding(
+      padding: EdgeInsets.only(
+        bottom: 8,
+        right: isMe ? 8 : 0,
+        left: !isMe ? 8 : 0,
+      ),
+      child: CircleAvatar(
+        backgroundImage: NetworkImage(ureImage),
+      ),
+    );
+
     return Row(
       mainAxisAlignment: isMe ? MainAxisAlignment.end : MainAxisAlignment.start,
+      crossAxisAlignment: CrossAxisAlignment.end,
       children: [
+        if (!isMe) avatar,
         ConstrainedBox(
           constraints: BoxConstraints(
             minWidth: 50,
@@ -66,6 +81,7 @@ class MessageBubble extends StatelessWidget {
             ],
           ),
         ),
+        if (isMe) avatar,
       ],
     );
   }
